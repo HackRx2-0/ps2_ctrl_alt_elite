@@ -1,8 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Row, Col, Drawer } from "antd";
 import { withTranslation } from "react-i18next";
 import Container from "../../common/Container";
 import { SvgIcon } from "../../common/SvgIcon";
+import { useAuth } from '../../contexts/AuthContext'
 import {
   HeaderSection,
   LogoContainer,
@@ -15,7 +16,7 @@ import {
   Outline,
   Span,
 } from "./styles";
-import { NavLink } from "react-router-dom";
+import {Link, NavLink} from "react-router-dom";
 
 const Header = ({ t }: any) => {
   const [visible, setVisibility] = useState(false);
@@ -36,6 +37,18 @@ const Header = ({ t }: any) => {
       });
       setVisibility(false);
     };
+
+    const { currentUser:user, logout } = useAuth()
+    console.log(user)
+
+    async function handleLogout() {
+      try {
+        await logout();
+      } catch {
+        // setError("Failed to log out");
+      }
+    }
+
     return (
       <>
         <CustomNavLinkSmall onClick={() => scrollTo("about")}>
@@ -59,7 +72,10 @@ const Header = ({ t }: any) => {
         <CustomNavLinkSmall onClick={() => scrollTo("product")}>
           <Span>{t("Kids")}</Span>
         </CustomNavLinkSmall>
-        <NavLink to="/login">Sign In</NavLink>
+        {/*<NavLink to={ !!user ? "/" : "/login" }>{ !!user ? 'Sign Out' : 'Sign In' }</NavLink>*/}
+        {!!user ? <Link to="/login" className="menu-bars" onClick={handleLogout}>
+          Logout
+        </Link> : null}
       </>
     );
   };

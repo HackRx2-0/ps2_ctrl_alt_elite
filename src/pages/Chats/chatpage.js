@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from "react";
-import { ChatEngine } from "react-chat-engine";
+import {useEffect, useRef, useState} from "react";
+import {ChatEngine} from "react-chat-engine";
 import Header from "../../components/ChatpageHeader/index";
 import "./chatpage.scss";
-import { useAuth } from "../../contexts/AuthContext";
-import { useHistory } from "react-router-dom";
+import {useAuth} from "../../contexts/AuthContext";
+import {useHistory} from "react-router-dom";
 import axios from "axios";
+import {parseMessage} from "../../utils/queryGenerator";
 
 const Chats = () => {
   const didMountRef = useRef(false);
@@ -13,6 +14,36 @@ const Chats = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   console.log(user.uid);
+
+  const $ = document.querySelector.bind(document)
+
+  async function callback(cid, msg) {
+    const str = await parseMessage(msg)
+    let results
+    if (!!str) {
+      const url = `http://localhost:8080/serp/results?q=` + str
+      try {
+        let res = await fetch(url)
+        res = await res.json()
+        console.log(res['shopping_results'])
+        if (!$('#ce-settings-container-recommendations')) {
+          let div = document.createElement('div')
+          div.setAttribute('id', 'ce-settings-container-recommendations')
+          $('.ce-settings-container').appendChild(div)
+        }
+        $('#ce-settings-container-recommendations').innerHTML = '<h3>Recommendations</h3><br><ul>'
+        res['shopping_results'].forEach(v => {
+          $('#ce-settings-container-recommendations').innerHTML +=
+              `<li><a href="${v['link']}">${v.source + ' | ' + v.title + ' | ' + v.price ?? ''}</a></li>`
+        })
+        $('#ce-settings-container-recommendations').innerHTML += '</ul>'
+
+      } catch (e) {
+        return null
+      }
+    } else console.log('nvm')
+    console.log("yoohoo!")
+  }
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -72,6 +103,7 @@ const Chats = () => {
 			userName={user.email}
 			userSecret={user.uid}
 			projectID='ac552d08-a18d-406c-8c25-0fe80ab4d1dc'
+            onNewMessage={callback}
 		/>
       </div>
     </div>
