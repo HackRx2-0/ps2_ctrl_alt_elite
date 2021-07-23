@@ -1,0 +1,15 @@
+{
+  "title": "Shopping Redefined",
+  "text": "Explore a new way to find the product you're looking for. Join the community now!",
+  "button": [
+    {
+      "title": "Login",
+      "ref": "/login"
+    },
+    {
+      "title": "Sign Up",
+      "color": "#fff",
+      "ref": "/signup"
+    }
+  ]
+}
