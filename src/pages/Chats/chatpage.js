@@ -15,27 +15,33 @@ const Chats = () => {
   const [loading, setLoading] = useState(true);
   console.log(user.uid);
 
+  const $ = document.querySelector.bind(document)
+
   async function callback(cid, msg) {
     const str = await parseMessage(msg)
+    let results
     if (!!str) {
-      let results
-      const url = `https://serpapi.com/search.json?q=${str}&tbm=shop&location=india&hl=en&gl=in&api_key=5d67a583b12201e266bd9792d688014f4892df464cad776a84fd764c97c76a2a&num=3`
+      const url = `http://localhost:8080/serp/results?q=` + str
       try {
-        results = await fetch(url, {
-          mode: 'cors',
-          headers: {
-            'Access-Control-Allow-Origin': '*'
-          }
+        let res = await fetch(url)
+        res = await res.json()
+        console.log(res['shopping_results'])
+        if (!$('#ce-settings-container-recommendations')) {
+          let div = document.createElement('div')
+          div.setAttribute('id', 'ce-settings-container-recommendations')
+          $('.ce-settings-container').appendChild(div)
+        }
+        $('#ce-settings-container-recommendations').innerHTML = '<h3>Recommendations</h3><br><ul>'
+        res['shopping_results'].forEach(v => {
+          $('#ce-settings-container-recommendations').innerHTML +=
+              `<li><a href="${v['link']}">${v.source + ' | ' + v.title + ' | ' + v.price ?? ''}</a></li>`
         })
+        $('#ce-settings-container-recommendations').innerHTML += '</ul>'
 
-        results = await results.json()
       } catch (e) {
-        // do nothing
-        console.log(e)
+        return null
       }
-      console.log(results)
-    }
-    else console.log('nvm')
+    } else console.log('nvm')
     console.log("yoohoo!")
   }
 
