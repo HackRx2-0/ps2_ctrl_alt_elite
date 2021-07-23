@@ -5,6 +5,7 @@ import "./chatpage.scss";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
+import {parseMessage} from "../../utils/queryGenerator";
 
 const Chats = () => {
   const didMountRef = useRef(false);
@@ -13,6 +14,13 @@ const Chats = () => {
   const history = useHistory();
   const [loading, setLoading] = useState(true);
   console.log(user.uid);
+
+  async function callback(cid, msg) {
+    const str = await parseMessage(msg)
+    if (!!str) console.log('fetch from serp!')
+    else console.log('nvm')
+    console.log("yoohoo!")
+  }
 
   useEffect(() => {
     if (!didMountRef.current) {
@@ -72,6 +80,7 @@ const Chats = () => {
 			userName={user.email}
 			userSecret={user.uid}
 			projectID='ac552d08-a18d-406c-8c25-0fe80ab4d1dc'
+            onNewMessage={callback}
 		/>
       </div>
     </div>
