@@ -14,6 +14,7 @@ import {
 import { addSyntheticLeadingComment } from "typescript";
 import axios from "axios";
 import { useAuth } from "../../../contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const chat = new Map();
 chat.set("Fashion",44013);
@@ -75,7 +76,8 @@ const LeftContentBlock = ({
                         fixedWidth={true}
                         onClick={()=>addChat(title)}
                       >
-                        {t(item.title)}
+                      <Link to={"/chats"}> {t(item.title)}</Link>
+                       
                       </Button>
                     );
                   })}
